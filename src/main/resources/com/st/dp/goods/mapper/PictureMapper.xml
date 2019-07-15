@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.st.dp.goods.mapper.PictureMapper">
+
+	<!-- Result Map -->
+	<resultMap id="BaseResultMap"
+		type="PictureModel">
+		<result column="id" property="id" />
+		<result column="product_code" property="productCode" />
+		<result column="location" property="location" />
+		<result column="type" property="type" />
+	</resultMap>
+
+	<!-- 表中所有字段 sql片段 -->
+	<sql id="Base_Column_List">
+		id,product_code,location,type
+	</sql>
+
+	<!-- Append_Where条件,sql标签下是sql语句片段 -->
+	<sql id="Append_Where">
+		where 1=1
+		<if test="id != null">
+			and id= #{id}
+		</if>
+		<if test="productCode != null and productCode !=''">
+			and product_code like #{productCode} <!-- #{code}是参数的属性名 -->
+		</if>
+		<if test="location != null and location !=''">
+			and location = #{location}
+		</if>
+<!-- 		<if test="type != null and type !=''"> -->
+<!-- 			and type = #{type} -->
+<!-- 		</if> -->
+	</sql>
+	
+	<!-- 插入记录 -->
+	<insert id="insert" parameterType="Object">
+		insert into ssm_dp_0601.picture(product_code, location, type)
+		values(#{productCode}, #{location},#{type})
+		<!--#{code}是实体类中的属性名 -->
+	</insert>
+
+	<!-- 根据物理主键id进行删除 -->
+	<delete id="delete" parameterType="Object">
+		delete from ssm_dp_0601.picture where id = #{id}  
+		<!--#{id}中的id是UserMapper接口中,delete方法的形参的名字 -->
+	</delete>
+
+	<!-- 根据model中属性进行删除 -->
+	<delete id="deleteModel" parameterType="Object">
+		delete from ssm_dp_0601.picture
+		<include refid="Append_Where" />
+	</delete>
+
+	<!-- 根据model.code修改全部属性 -->
+	<update id="update" parameterType="Object">
+		update ssm_dp_0601.picture set product_code = #{productCode}, type= #{type}
+		where location = #{location}
+	</update>
+
+	<!-- 根据model.code修改不为空的属性 -->
+	<update id="updateActive" parameterType="Object">
+		update ssm_dp_0601.picture set
+		<trim suffixOverrides=","><!--去除后缀"," -->
+			<if test="productCode != null and productCode != '' ">
+				product_code = #{productCode},
+			</if>
+			<if test="type != null and type != '' ">
+				type= #{type},
+			</if>
+		</trim>
+		where location = #{location}
+	</update>
+
+	<!-- 根据物理主键id查询model -->
+	<!-- 根据逻辑主键model.code查询model -->
+	<select id="selectUQ" resultMap="BaseResultMap" parameterType="Object">
+		<!-- resultMap="BaseResultMap"属性的值对应文件映射的id -->
+		select
+		<include refid="Base_Column_List" />
+		from ssm_dp_0601.picture where location = #{id}
+	</select>
+	
+	<!-- 根据model中属性查询符合条件的model集合 -->
+	<select id="selectModel" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from ssm_dp_0601.picture
+		<include refid="Append_Where" />
+		limit ${rowStart},${pageLimit}  <!-- 分页 -->
+	</select>
+	
+	<!-- 查询所有的model -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from ssm_dp_0601.picture
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="productCode != null and productCode !=''">
+			and product_code = #{productCode} <!-- #{code}是参数的属性名 -->
+		</if>
+		<if test="location != null and location !=''">
+			and location = #{location}
+		</if>
+		<if test="type != null and type !=''">
+			and type = #{type}
+		</if>
+		<if test="orderby != null and orderby != ''">
+			${orderby}
+		</if>
+	</select>
+	
+	<!-- 系统用户 列表总数 -->
+	<select id="selectCount" resultType="java.lang.Integer" parameterType="Object">
+		<!-- resultType="java.lang.Integer" resultType属性是返回类型-->
+		select count(1) from ssm_dp_0601.picture
+		<include refid="Append_Where" />
+	</select>
+</mapper>   

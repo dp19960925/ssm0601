@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.st.dp.order.mapper.OrderMapper">
+   
+	<!-- Result Map 结果映射 查询时使用 -->
+	<resultMap id="BaseResultMap" type="OrderModel">
+		<result column="id" property="id" />
+		<result column="code" property="code" />
+		<result column="user_code" property="userCode" />
+		<result column="address" property="address" />
+		<result column="entry_time" property="entryTime" />
+		<result column="state" property="state" />
+		<result column="user_name" property="userName" />
+	</resultMap>
+
+	<!-- 查询条件 -->
+	<sql id="TiaoJian">
+		where 1=1
+		<if test="id !=null">
+			and id=#{id}
+		</if>
+		<if test="code !=null and code !=''">
+			and code like  #{code}
+		</if>
+		<if test="userCode !=null and userCode !=''">
+			and user_code like  #{userCode} 
+		</if>
+		
+		
+		<if test="entryTime !=null">
+		<!-- mybatis 3.3.0中对于时间参数进行比较有的一个bug.
+			 如果拿传入的时间类型参数与空字符串”进行对比判断则会引发异常. 
+			 所以在上面的代码中去该该判断, 只保留非空判断就正常了 -->
+			and entry_time like #{entryTime}
+		</if>
+		<if test="address !=null and address !=''">
+			and address like  #{address} 
+		</if>
+		<if test="state !=null and state !=''">
+			and state like #{state}
+		</if>
+	</sql>
+
+
+	<!-- table all fields sql片段 -->
+	<sql id="Base_Column_List">
+		id, user_code , code, entry_time,address,state
+	</sql>
+	<!-- table all fields sql片段 -->
+	
+<!-- 	表名 -->
+	<sql id="TableName">
+		ssm_dp_0601.order
+	</sql>
+
+
+
+	<insert id="insert" parameterType="Object">
+		insert into
+		<include refid="TableName" />
+		( code ,user_code , entry_time, address,state)
+		values(#{code}, #{userCode},
+		#{entryTime}, #{address},#{state})
+	</insert>
+
+	<delete id="delete" parameterType="String">
+		delete from
+		<include refid="TableName" />
+		where code = #{code}
+
+	</delete>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="update" parameterType="Object">
+		update
+		<include refid="TableName" />
+		set
+		<trim suffixOverrides=",">
+			<if test="userCode != null and userCode != '' ">
+				user_code = #{userCode},
+			</if>
+			
+			<if test="entryTime != null ">
+				entry_time = #{entryTime},
+			</if>
+			<if test="address != null and address != ''">
+				address = #{address},
+			</if>
+			<if test="state != null and state != '' ">
+				state = #{state},
+			</if>
+		</trim>
+		where code = #{code}
+	</update>
+
+
+
+	<!-- 根据id 查询系统用户 -->
+	<select id="selectById" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="TableName" />
+		where id=#{id}
+	</select>
+	<!-- 根据code 查询系统用户 -->
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		,( select  us.name from ssm_dp_0601.user as us where us.code=ssm_dp_0601.order.user_code) as user_name
+		from
+		<include refid="TableName" />
+		where code=#{code}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1)
+		from
+		<include refid="TableName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		,( select  us.name from ssm_dp_0601.user as us where us.code=ssm_dp_0601.order.user_code) as user_name
+		from
+		<include refid="TableName" />
+		<include refid="TiaoJian" />
+		order by id desc
+		limit ${rowStart},${pageLimit}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="TableName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+
+</mapper>   

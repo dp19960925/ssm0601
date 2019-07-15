@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC 
+"-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+		<!-- 打印查询语句 -->
+	<settings>
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
+<!-- 	起别名 -->
+	<typeAliases>
+		<typeAlias alias="UserModel" type="com.st.dp.user.model.UserModel" />
+		<typeAlias alias="ClassModel" type="com.st.dp.goods.model.ClassModel" />
+		<typeAlias alias="GoodsModel" type="com.st.dp.goods.model.GoodsModel" />
+		<typeAlias alias="PictureModel" type="com.st.dp.goods.model.PictureModel" />
+		<typeAlias alias="OrderCarModel" type="com.st.dp.order.model.OrderCarModel" />
+		<typeAlias alias="OrderGoodsModel" type="com.st.dp.order.model.OrderGoodsModel" />
+		<typeAlias alias="OrderModel" type="com.st.dp.order.model.OrderModel" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="com/st/dp/user/mapper/UserMapper.xml" />
+		<mapper resource="com/st/dp/goods/mapper/ClassMapper.xml" />
+		<mapper resource="com/st/dp/goods/mapper/GoodsMapper.xml" />
+		<mapper resource="com/st/dp/goods/mapper/PictureMapper.xml" />
+		<mapper resource="com/st/dp/order/mapper/OrderCarMapper.xml" />
+		<mapper resource="com/st/dp/order/mapper/OrderGoodsMapper.xml" />
+		<mapper resource="com/st/dp/order/mapper/OrderMapper.xml" />
+	</mappers>
+</configuration>

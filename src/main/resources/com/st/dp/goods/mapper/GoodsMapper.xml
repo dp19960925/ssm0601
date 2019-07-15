@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.st.dp.goods.mapper.GoodsMapper">
+
+	<!-- Result Map -->
+<!-- 	返回时用于变换 -->
+	<resultMap id="BaseResultMap" type="GoodsModel">
+		<result column="id" property="id" />
+		<result column="code" property="code" />
+		<result column="name" property="name" />
+		<result column="price" property="price" />
+		<result column="des" property="des" />
+		<result column="stock" property="stock" />
+		<result column="state" property="state" />
+		<result column="classcode" property="classcode" />
+		<result column="onecode" property="onecode" />
+	</resultMap>
+
+	<!-- table all fields   sql片段 -->
+	<sql id="Base_Column_List">
+		id, code, name, price,des,stock,state,classcode,
+		(select c.parcode from ssm_dp_0601.goodsclass c where c.code=classcode) onecode,
+		(select p.location from ssm_dp_0601.picture p where p.product_code=code and type=1) location
+	</sql>
+
+<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		where 1=1
+			<if test="id != null">
+				and id = #{id}
+			</if>
+			<if test="code != null and code != ''">
+				and code like #{code} 
+			</if>
+			<if test="name != null and name != ''">
+				and name like #{name}
+			</if>
+			<if test="price != null and price != ''">
+				and price like #{price}
+			</if>
+			<if test="des != null and des != ''">
+				and des like #{des}
+			</if>
+			<if test="stock != null and stock != ''">
+				and stock like #{stock}
+			</if>
+			<if test="state != null and state != ''">
+				and state like #{state}
+			</if>
+				<if test="classcode != null and classcode != ''">
+				and classcode like #{classcode}
+			</if>
+				
+		
+	</sql>
+
+
+<!-- 	添加 -->
+	<insert id="insert" parameterType="Object">
+		insert into ssm_dp_0601.goodsinfor(code, name, price,des,stock,state,classcode)
+		values(#{code}, #{name}, #{price},#{des},#{stock},#{state},#{classcode})
+	</insert>
+<!-- 	删除 -->
+	<delete id="delete" parameterType="String">
+		delete from ssm_dp_0601.goodsinfor where code = #{code}
+	</delete>
+<!-- 				按其他条件删除 -->
+	<delete id="deleteModel" parameterType="Object">
+		delete from ssm_dp_0601.goodsinfor 
+		<include refid="Example_Where_Clause" />
+	</delete>
+<!-- 	全部字段修改 -->
+<update id="update" parameterType="Object">
+		update ssm_dp_0601.goodsinfor 
+		set name=#{name},price=#{price},des=#{des},	stock=#{stock},state=#{state},classcode=#{classcode}	
+		where code=#{code}
+</update>
+<!-- 	部分字段修改 -->
+<update id="updateActive" parameterType="Object">
+		update ssm_dp_0601.goodsinfor set
+		<trim suffixOverrides=",">
+			<if test="name!=null and name !='' ">
+				name=#{name},
+			</if>
+			<if test="price!=null and price !='' ">
+				price=#{price},
+			</if>
+			<if test="des!=null and des !='' ">
+				des=#{des},
+			</if>
+			<if test="stock!=null and stock !='' ">
+				stock=#{stock},
+			</if>
+			<if test="state!=null and state !='' ">
+				state=#{state},
+			</if>
+			<if test="classcode!=null and classcode !='' ">
+				classcode=#{classcode},
+			</if>
+		</trim>
+			where code=#{code}
+	</update>		
+	
+		<!-- 根据主键查询 系统用户 -->
+	<select id="selectId" resultMap="BaseResultMap" parameterType="String">
+		select <include refid="Base_Column_List" />
+		from ssm_dp_0601.goodsinfor where code = #{code}
+	</select>
+
+	<!-- 系统用户 列表总数 -->
+	<select id="selectCount" resultType="java.lang.Integer" 
+	parameterType="ClassModel">
+		select count(1) from ssm_dp_0601.goodsinfor 
+		<include refid="Example_Where_Clause" />
+	</select>
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from ssm_dp_0601.goodsinfor
+		<include refid="Example_Where_Clause" />
+		 limit #{rowStart},#{pageLimit}
+<!-- 		<if test="pager.orderCondition != null and pager.orderCondition != ''"> -->
+<!-- 			${pager.orderCondition} -->
+<!-- 		</if> -->
+<!-- 		<if test="pager.mysqlQueryCondition != null and pager.mysqlQueryCondition != ''"> -->
+<!-- 			${pager.mysqlQueryCondition} -->
+<!-- 			//这里为啥是$?       #可以自动识别类型  如果传进来是字符串 自动在外加上""号   -->
+<!-- 				$   不根据类型，直接放在这 不管啥类型都没有引号 -->
+<!-- 		</if> -->
+	</select>
+	
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from ssm_dp_0601.goodsinfor
+		<include refid="Example_Where_Clause" />
+		 limit #{rowStart},#{pageLimit}
+<!-- 		<if test="pager.orderCondition != null and pager.orderCondition != ''"> -->
+<!-- 			${pager.orderCondition} -->
+<!-- 		</if> -->
+	</select>
+</mapper>   

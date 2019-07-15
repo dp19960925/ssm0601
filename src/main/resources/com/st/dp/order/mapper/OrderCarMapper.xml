@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.st.dp.order.mapper.OrderCarMapper">
+
+	<!-- Result Map 结果映射 查询时使用 -->
+	<resultMap id="BaseResultMap" type="OrderCarModel">
+		<result column="id" property="id" />
+		<result column="user_code" property="userCode" />
+		<result column="goods_code" property="goodsCode" />
+		<result column="location" property="location" />
+		<result column="price" property="price" />
+		<result column="name" property="name" />
+		<result column="num" property="num" />
+		<result column="total" property="total" />
+	</resultMap>
+
+	<!-- 查询条件 -->
+	<sql id="TiaoJian">
+		where 1=1
+		<if test="id !=null">
+			and id=#{id}
+		</if>
+		<if test="userCode !=null and userCode !=''">
+			and user_code like  #{userCode} 
+		</if>
+		<if test="goodsCode !=null and goodsCode !=''">
+			and goods_code like  #{goodsCode}
+		</if>
+		<if test="num !=null and num !=''">
+			and num like #{num}
+		</if>
+		<if test="total !=null and total !=''">
+			and total like #{total}
+		</if>
+	</sql>
+
+
+	<!-- table all fields sql片段 -->
+	<sql id="Base_Column_List">
+		id, user_code , goods_code, num,total
+	</sql>
+	<!-- table all fields sql片段 -->
+	<sql id="UserName">
+		ssm_dp_0601.ordercar
+	</sql>
+
+
+
+	<insert id="insert" parameterType="Object">
+		insert into
+		<include refid="UserName" />
+		( user_code , goods_code, num,total)
+		values(#{userCode}, #{goodsCode},
+		#{num},#{total})
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		delete from
+		<include refid="UserName" />
+		<include refid="TiaoJian"></include>
+
+	</delete>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="update" parameterType="Object">
+		update
+		<include refid="UserName" />
+		set
+		<trim suffixOverrides=",">
+			<if test="userCode != null and userCode != '' ">
+				user_code = #{userCode},
+			</if>
+			<if test="goodsCode != null and goodsCode != '' ">
+				goods_code = #{goodsCode},
+			</if>
+			<if test="num != null and num != '' ">
+				num = #{num},
+			</if>
+			<if test="total != null and total != '' ">
+				total = #{total},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+
+
+	<!-- 根据id 查询系统用户 -->
+	<select id="selectById" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		,(select d.price from ssm_dp_0601.goodsinfor d where d.code=ssm_dp_0601.ordercar.goods_code )as price
+		from
+		<include refid="UserName" />
+		where id=#{id}
+	</select>
+	<!-- 根据code 查询系统用户 -->
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="UserName" />
+		where  user_code=#{userCode} and  goods_code=#{goodsCode}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1)
+		from
+		<include refid="UserName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		,(select d.location from ssm_dp_0601.picture d where d.product_code=pc.goods_code and type='1')as location
+,(select d.price from ssm_dp_0601.goodsinfor d where d.code=pc.goods_code )as price
+,(select d.name from ssm_dp_0601.goodsinfor d where d.code=pc.goods_code )as name
+		from
+		<include refid="UserName" /> as pc
+		<include refid="TiaoJian" />
+		
+		
+		limit ${rowStart},${pageLimit}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="UserName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+
+</mapper>   
